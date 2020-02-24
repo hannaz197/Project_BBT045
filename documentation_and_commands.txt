@@ -7,7 +7,12 @@
 # ---------- LOGIN INTO SERVER ------------
 ssh studentX@15.236.44.5
 #password: _______
+######################################################################
+Set read only acess for directory for the user
+chmod u=r DIRECTORYNAME
 
+Set read and write acess for directory for the user 
+chmod u = rw DIRECTORYNAME
 ######################################################################
 # ---------- STEP 1: DOWNLOAD FASTQ FILES TO SERVER ----------------
 
