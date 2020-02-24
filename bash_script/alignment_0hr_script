@@ -1,0 +1,14 @@
+# Align the sequence to the references and add to given folder
+bowtie2 -x ~/project/mapping/bowtie_index/salmonella_typhi -1 ~/project/raw_data/ERR405226_1.fastq -2 ~/project/raw_data/ERR405226_2.fastq -S ~/project/mapping/mapping_2020_02_24/time_0h/ERR405226.sam
+
+# Convert to bam-file
+samtools view -b -S -o ~/project/mapping/mapping_2020_02_24/time_0h/ERR405226.bam ~/project/mapping/mapping_2020_02_24/time_0h/ERR405226.sam
+
+# Sort in order to optimise the lookup
+samtools sort ~/project/mapping/mapping_2020_02_24/time_0h/ERR405226.bam -o ~/project/mapping/mapping_2020_02_24/time_0h/ERR405226.sorted.bam
+
+
+#Index the sorted BAM, converting to bai
+samtools index ~/project/mapping/mapping_2020_02_24/time_0h/ERR405226.sorted.bam
+
+

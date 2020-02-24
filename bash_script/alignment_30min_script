@@ -1,0 +1,40 @@
+# Align the sequence to the references and add to given folder
+bowtie2 -x ~/project/mapping/bowtie_index/salmonella_typhi -1 ~/project/raw_data/ERR405227_1.fastq -2 ~/project/raw_data/ERR405227_2.fastq -S ~/project/mapping/mapping_2020_02_24/time_30min/ERR405227.sam
+
+# Convert to bam-file
+samtools view -b -S -o ~/project/mapping/mapping_2020_02_24/time_30min/ERR405227.bam ~/project/mapping/mapping_2020_02_24/time_30min/ERR405227.sam
+
+# Sort in order to optimise the lookup
+samtools sort ~/project/mapping/mapping_2020_02_24/time_30min/ERR405227.bam -o ~/project/mapping/mapping_2020_02_24/time_30min/ERR405227.sorted.bam
+
+
+#Index the sorted BAM, converting to bai
+samtools index ~/project/mapping/mapping_2020_02_24/time_30min/ERR405227.sorted.bam
+
+# Align the sequence to the references and add to given folder
+bowtie2 -x ~/project/mapping/bowtie_index/salmonella_typhi -1 ~/project/raw_data/ERR405228_1.fastq -2 ~/project/raw_data/ERR405228_2.fastq -S ~/project/mapping/mapping_2020_02_24/time_30min/ERR405228.sam
+
+# Convert to bam-file
+samtools view -b -S -o ~/project/mapping/mapping_2020_02_24/time_30min/ERR405228.bam ~/project/mapping/mapping_2020_02_24/time_30min/ERR405228.sam
+
+# Sort in order to optimise the lookup
+samtools sort ~/project/mapping/mapping_2020_02_24/time_30min/ERR405228.bam -o ~/project/mapping/mapping_2020_02_24/time_30min/ERR405228.sorted.bam
+
+
+#Index the sorted BAM, converting to bai
+samtools index ~/project/mapping/mapping_2020_02_24/time_30min/ERR405228.sorted.bam
+
+
+# Align the sequence to the references and add to given folder
+bowtie2 -x ~/project/mapping/bowtie_index/salmonella_typhi -1 ~/project/raw_data/ERR405229_1.fastq -2 ~/project/raw_data/ERR405229_2.fastq -S ~/project/mapping/mapping_2020_02_24/time_30min/ERR405229.sam
+
+# Convert to bam-file
+samtools view -b -S -o ~/project/mapping/mapping_2020_02_24/time_30min/ERR405229.bam ~/project/mapping/mapping_2020_02_24/time_30min/ERR405229.sam
+
+# Sort in order to optimise the lookup
+samtools sort ~/project/mapping/mapping_2020_02_24/time_30min/ERR405229.bam -o ~/project/mapping/mapping_2020_02_24/time_30min/ERR405229.sorted.bam
+
+
+#Index the sorted BAM, converting to bai
+samtools index ~/project/mapping/mapping_2020_02_24/time_30min/ERR405229.sorted.bam
+

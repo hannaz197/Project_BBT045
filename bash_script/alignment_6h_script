@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Align the paired end reads to reference genome
+bowtie2 -x ~/project/mapping/bowtie_index/salmonella_typhi -1 ~/project/raw_data/ERR405231_1.fastq -2 ~/project/raw_data/ERR405231_2.fastq -S ~/project/mapping/mapping_2020_02_24/time_6h/mapped_ERR405231.sam
+
+# Convert SAM file to BAM file
+samtools view -b -S -o ~/project/mapping/mapping_2020_02_24/time_6h/mapped_ERR405231.bam ~/project/mapping/mapping_2020_02_24/time_6h/mapped_ERR405231.sam
+
+# Sort the BAM file
+samtools sort ~/project/mapping/mapping_2020_02_24/time_6h/mapped_ERR405231.bam -o ~/project/mapping/mapping_2020_02_24/time_6h/mapped_ERR405231.sorted.bam
+
+# Index the sorted BAM file
+samtools index ~/project/mapping/mapping_2020_02_24/time_6h/mapped_ERR405231.sorted.bam
