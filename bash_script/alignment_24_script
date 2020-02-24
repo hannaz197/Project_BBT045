@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Align the paired end reads to reference genome
-bowtie2 -x ~/project/mapping/bowtie_index/salmonella_typhi -1 ~/project/raw_data/ERR405234_1.fastq -2 ~/project/raw_data/ERR405234_2.fastq -S ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405234.sam
+bowtie2 -x ~/project/mapping/bowtie_index/salmonella_typhi -1 ~/project/raw_data/ERR405235_1.fastq -2 ~/project/raw_data/ERR405235_2.fastq -S ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405235.sam
 
 # Convert SAM file to BAM file
-samtools view -b -S -o ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405234.bam ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405234.sam
+samtools view -b -S -o ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405235.bam ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405235.sam
 
 # Sort the BAM file
-samtools sort ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405234.bam -o ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405234.sorted.bam
+samtools sort ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405235.bam -o ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405235.sorted.bam
 
 # Index the sorted BAM file
-samtools index ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405234.sorted.bam
+samtools index ~/project/mapping/mapping_2020_02_24/time_24h/mapped_ERR405235.sorted.bam
 
