@@ -16,7 +16,7 @@ chmod u = rw DIRECTORYNAME
 ######################################################################
 # Run a bash script
 # set permissions 
-chmod 775 FILENAME
+chmod 755 FILENAME
 # run
 ./FILENAME
 ######################################################################
