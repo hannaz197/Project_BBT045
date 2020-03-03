@@ -15,7 +15,7 @@ The preview shows you a rendered HTML copy of the contents of the editor. Conseq
 ```{r}
 
 # Tidyverse 
-install.packages("tidyverse")
+# install.packages("tidyverse")
 
 # DESeq
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -23,18 +23,18 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 
 BiocManager::install("DESeq")
 
-#ggplot2 
-install.packages("ggplot2")
+# ggplot2 
+# install.packages("ggplot2")
 
 # Farver
-install.packages("farver")
+# install.packages("farver")
 
 # VennDiagram package
-install.packages("VennDiagram")
+# install.packages("VennDiagram")
 
 ```
 
-# Import libraries 
+# Import libraries needed
 ```{r}
 library("DESeq")
 library("ggplot2")
@@ -45,6 +45,7 @@ library(RColorBrewer) # coloring Venn diagrammes
 ```
 
 # Load the data 
+Data from the mapping were loaded, then processed to remove the sense/antisense counts and only keep the total ones. 
 ```{r}
 # time = 0h
 counts_0h = read.table('/home/student5/project/mapping/mapping_2020_02_24/count_values/counts_values_0h.txt',
@@ -146,8 +147,10 @@ results = nbinomTest(cds,"0h","24h") # Calculate logfoldchange and adj p-values
 significant_genes_0h_24h = results[results$padj < cutoff,] # Significant genes
 
 ```
+Where the plotDispEsts gives an approximate fit of the modelled data to our input data.
 
-Haven gotten and saved all the significant genes, these were further analysed after sorting them according to the code seen below. 
+
+Haven gotten and saved all the significant genes, these were further analysed after sorting them according to the code seen below. At last, table with the significant gens and their output log2FCs and padjusted etc are saved as a text file. 
 ```{r}
 # Sort according to p-adj 
 order_0h_30min = order(significant_genes_0h_30min$padj)
@@ -162,9 +165,9 @@ significant_genes_0h_24h = significant_genes_0h_24h[order_0h_24h,]
 #significant_genes_0h_30min[significant_genes_0h_30min$id=="sifB",]$log2FoldChange
 
 # Save the results to use in the metabollic profiling step
-write.table(significant_genes_0h_30min, file ="significant_genes_30min", sep = "\t" )
-write.table(significant_genes_0h_6h, file ="significant_genes_6h", sep = "\t" )
-write.table(significant_genes_0h_24h, file ="significnt_genes_24h", sep = "\t" )
+write.table(significant_genes_0h_30min, file ="~/Johannas_Rcode/results/differential_expression_results/significant_genes_30min", sep = "\t" )
+write.table(significant_genes_0h_6h, file ="~/Johannas_Rcode/results/differential_expression_results/significant_genes_6h", sep = "\t" )
+write.table(significant_genes_0h_24h, file ="~/Johannas_Rcode/results/differential_expression_results/significant_genes_24h", sep = "\t" )
 
 
 ```
@@ -221,16 +224,15 @@ common_BaseMeanA_significant_genes_0h_24h = common_BaseMeanA_significant_genes_0
 
 
 # Create new tables for the significant genes which have been processed together
-write.table(common_BaseMeanA_significant_genes_0h_30min, file ="common_BaseMeanA_significant_genes_30min", sep = "\t" )
-write.table(common_BaseMeanA_significant_genes_0h_6h, file ="common_BaseMeanAsignificant_genes_6h", sep = "\t" )
-write.table(common_BaseMeanA_significant_genes_0h_24h, file ="common_BaseMeanAsignificnt_genes_24h", sep = "\t" )
+write.table(common_BaseMeanA_significant_genes_0h_30min, file ="~/Johannas_Rcode/results/differential_expression_results/common_BaseMeanA_significant_genes_30min", sep = "\t" )
+write.table(common_BaseMeanA_significant_genes_0h_6h, file ="~/Johannas_Rcode/results/differential_expression_results/common_BaseMeanAsignificant_genes_6h", sep = "\t" )
+write.table(common_BaseMeanA_significant_genes_0h_24h, file ="~/Johannas_Rcode/results/differential_expression_results/common_BaseMeanAsignificnt_genes_24h", sep = "\t" )
 
 
 ```
 
-# Venn diagrammes
-
-## Create list of gene names
+# Create list of gene names and use in Venn diagramme
+To access what genes were commonly differentially expressed at all time points, a venn diagramme was created. 
 
 ```{r}
 # Extract only the GeneIDs
@@ -245,7 +247,7 @@ myCol <- brewer.pal(3, "Pastel2")
 venn.diagram(
         x = list(genelist_30min, genelist_6h, genelist_24h),
         category.names = c("30 min" , "6h " , "24h"),
-        filename = 'VennDiagram.png',
+        filename = '~/Johannas_Rcode/results/differential_expression_results/VennDiagram.png',
         output=TRUE,
         
         # Output features
@@ -280,7 +282,6 @@ venn.diagram(
 # REMOVE UPON DECISION - Venn for common basemeanA
 
 # Venn diagrammes
-
 ## Create list of gene names
 
 ```{r}
@@ -296,7 +297,7 @@ myCol <- brewer.pal(3, "Pastel2")
 venn.diagram(
         x = list(common_BaseMeanA_genelist_30min, common_BaseMeanA_genelist_6h, common_BaseMeanA_genelist_24h),
         category.names = c("30 min" , "6h " , "24h"),
-        filename = 'VennDiagram_common.png',
+        filename = '~/Johannas_Rcode/results/differential_expression_results/VennDiagram_common.png',
         output=TRUE,
         
         # Output features
