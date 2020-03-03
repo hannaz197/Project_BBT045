@@ -11,7 +11,6 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
 BiocManager::install("DESeq")
-install.packages("venneuler")
 install.packages("VennDiagram")
 ```
 
@@ -163,8 +162,6 @@ significant_genes_24h = subset(result_24h,result_24h$padj<0.05)
 nrow(significant_genes_24h)
 
 
-DE_table_comparison = []
-
 
 # Save the results to use in the metabollic profiling step
 write.table(significant_genes_30min, file ="sig_30", sep = "\t" )
@@ -285,6 +282,7 @@ venn.diagram(
         cat.fontfamily = "sans",
         rotation = 1
 )
+
 ```
 
 
