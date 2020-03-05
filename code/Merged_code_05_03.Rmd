@@ -96,7 +96,9 @@ cds = estimateSizeFactors(cds) # Normalization
 cds = estimateDispersions(cds) # Estimate dispersion
 
 str(fitInfo(cds))
+pdf("/home/student5/project/results/differential_expression_results/fitted_dispersion_vs_normalizedmean.pdf") 
 plotDispEsts(cds) # Gives the fitted dispersion vs normalized mean to see fit
+dev.off()
 # Where the plotDispEsts gives an approximate fit of the modelled data to our input data.
 
 # time = 0h vs time = 30min 
@@ -127,10 +129,11 @@ common_BaseMeanA_significant_genes_0h_24h = common_BaseMeanA_significant_genes_0
 #Haven gotten and saved all the significant genes, these were further analysed after sorting them according to the code seen below. At last, table with the significant gens and their output log2FCs and padjusted etc are saved as a text file. 
 
 # Create new tables for the significant genes which have been processed together
-#write.table(common_BaseMeanA_significant_genes_0h_30min, file ="~/Johannas_Rcode/results/differential_expression_results/common_BaseMeanA_significant_genes_30min", sep = "\t" )
+write.table(common_BaseMeanA_significant_genes_0h_30min, file ="/home/student5/project/results/differential_expression_results/common_BaseMeanA_significant_genes_30min", sep = "\t" )
 #TODO: the names here 
-#write.table(common_BaseMeanA_significant_genes_0h_6h, file ="~/Johannas_Rcode/results/differential_expression_results/common_BaseMeanA_significant_genes_6h", sep = "\t" )
-#write.table(common_BaseMeanA_significant_genes_0h_24h, file ="~/Johannas_Rcode/results/differential_expression_results/common_BaseMeanA_significant_genes_24h", sep = "\t" )
+write.table(common_BaseMeanA_significant_genes_0h_6h, file ="/home/student5/project/results/differential_expression_results/common_BaseMeanA_significant_genes_6h", sep = "\t" )
+write.table(common_BaseMeanA_significant_genes_0h_24h, file ="/home/student5/project/results/differential_expression_results/common_BaseMeanA_significant_genes_24h", sep = "\t" )
+
 ```
 
 # Create list of gene names and use in Venn diagramme
@@ -148,7 +151,7 @@ myCol <- brewer.pal(3, "Pastel2")
 venn.diagram(
         x = list(common_BaseMeanA_genelist_30min, common_BaseMeanA_genelist_6h, common_BaseMeanA_genelist_24h),
         category.names = c("30 min" , "6h " , "24h"),
-        filename = '~/Johannas_Rcode/results/differential_expression_results/VennDiagram_common.png',
+        filename = '/home/student5/project/results/differential_expression_results/VennDiagram_common.png',
         output=TRUE,
         
         # Output features
