@@ -194,13 +194,15 @@ ratio_0h_6h =  dim(common_BaseMeanA_significant_genes_0h_6h)[1]/2078
 ratio_0h_24h =  dim(common_BaseMeanA_significant_genes_0h_24h)[1]/1483
 
 # Ratios reference 
-common_BaseMeanA_ratio_ref_0h_30min = 8/28
-common_BaseMeanA_ratio_ref_0h_6h = 271/155
-common_BaseMeanA_ratio_ref_0h_24h = 148/112
-# Ratios our 
-common_BaseMeanA_ratio_our_0h_30min = common_BaseMeanA_high_0h_30min/common_BaseMeanA_low_0h_30min
-common_BaseMeanA_ratio_our_0h_6h = common_BaseMeanA_high_0h_6h /common_BaseMeanA_low_0h_6h
-common_BaseMeanA_ratio_our_0h_24h = common_BaseMeanA_high_0h_24h / common_BaseMeanA_low_0h_24h
+ratio_logfold_high_0h_30min = common_BaseMeanA_high_0h_30min / 8 
+ratio_logfold_high_0h_6h = common_BaseMeanA_high_0h_6h / 271
+ratio_logfold_high_0h_24h = common_BaseMeanA_high_0h_24h / 148
+
+ratio_logfold_low_0h_30min = common_BaseMeanA_low_0h_30min / 28
+ratio_logfold_low_0h_6h = common_BaseMeanA_low_0h_6h / 155  
+ratio_logfold_low_0h_24h = common_BaseMeanA_low_0h_24h / 112 
+
+
 # Dot plot 
 common_BaseMeanA_logfold_30min = data.frame(group = "0.5",
                            value = common_BaseMeanA_significant_genes_0h_30min$log2FoldChange)
