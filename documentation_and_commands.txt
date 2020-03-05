@@ -8,12 +8,6 @@
 ssh studentX@15.236.44.5
 #password: _______
 ######################################################################
-Set read only acess for directory for the user
-chmod u=r DIRECTORYNAME
-
-Set read and write acess for directory for the user 
-chmod u = rw DIRECTORYNAME
-######################################################################
 # Run a bash script
 # set permissions 
 chmod 755 FILENAME
@@ -44,19 +38,18 @@ mv *.fastq raw_data #Move all the files to the new directory
 # Creating a file structure 
 mkdir project 
 
+# Move raw_data folder to project folder 
 mv raw_data project
 
 cd project/
 
-mkdir preprocessing 
-
 ######################################################################
 #### About the files ####
 # ERR405XXX.fastq
-# 224 - 226 0h 
-# 227 - 229 0.5h
-# 230 - 232 6h
-# 233 - 235 24h
+# 224 - 226 : time = 0h 
+# 227 - 229 : time = 0.5h
+# 230 - 232 : time = 6h
+# 233 - 235 : time = 24h
 # All files are in pairs e.g: ERR405224_1.fastq and ERR405224_2.fastq
 
 ######################################################################
@@ -70,16 +63,6 @@ scp student5@15.236.44.5:PATH-TO-FILE .
 ######################################################################
 #### Activate the environment ####
 source activate test_st5
-
-######################################################################
-#### Filtering #### 
-cd project/
-
-# Filter the files 224-226 and 230-235 (time 0h and time 6h)
-fastq_quality_filter -i raw_data/ERR405XXX_1.fastq -o preprocessing/ERR405XXX_1.filtered.fastq -q 30 -p 80
-
-#   [-q N]       = Minimum quality score to keep.
-#   [-p N]       = Minimum percent of bases that must have [-q] quality.
 
 ######################################################################
 #### Mapping to reference genome ####
@@ -96,14 +79,11 @@ wget ftp://ftp.ncbi.nih.gov/genomes/genbank/bacteria/Salmonella_enterica/assembl
 grep -P "PRJNA371\t" assembly_summary.txt |cut -f 20
 # output: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/007/545/GCA_000007545.1_ASM754v1
 # contains three genomic files; fna.gz, gbff.gz, gff.gz
-# TODO: Which should we use? 
 # about the files: https://www.ncbi.nlm.nih.gov/genome/doc/ftpfaq/
 # gff file is "annotation of the genomic sequence.." 
 
 # Downloaf fna.gz file (Genomic FASTA)
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/007/545/GCA_000007545.1_ASM754v1/GCA_000007545.1_ASM754v1_genomic.fna.gz
-
-# is at creating a bowtie index using bowtie2-build, should be here? 
 
 # Decompress
 gunzip GCA_000007545.1_ASM754v1_genomic.fna.gz
@@ -122,12 +102,12 @@ bowtie2-build -f <reference_in> <bt2_base>
 bowtie2-build -f GCA_000007545.1_ASM754v1_genomic.fna bowtie_index/salmonella_typhi
 
 # 2. Align
-bowtie2 -p NOTHREADS -t -x <bt2-idx> -1 FILE1 -2 FILE2 -S OUTPUTFILE.sam
+bowtie2 -t -x <bt2-idx> -1 FILE1 -2 FILE2 -S OUTPUTFILE.sam
 # output: a SAM file
 
 # Actual command 
 cd project/ 
-bowtie2 -p 2 -t -x mapping/bowtie_index/salmonella_typhi -1 preprocessing/ERR405224_1.filtered.fastq -2 preprocessing/ERR405224_2.filtered.fastq -S mapping/mapped_ERR405224.sam
+bowtie2 -t -x mapping/bowtie_index/salmonella_typhi -1 raw_data/ERR405224_1.fastq -2 raw_data/ERR405224_2.fastq -S mapping/mapped_ERR405224.sam
 
 # Arguments
 # -x : basename of the index for the reference genome.
@@ -135,7 +115,6 @@ bowtie2 -p 2 -t -x mapping/bowtie_index/salmonella_typhi -1 preprocessing/ERR405
 #      includeing the final -1-bt2
 # -S : file to write SAM alignments to.
 # -t : see the time it takes
-# -p : run using multiple cores
 
 # Convert SAM file to BAM file 
 samtools view -b -S -o mapped_ERR405224.bam mapped_ERR405224.sam
@@ -145,3 +124,5 @@ samtools sort mapped_ERR405224.bam -o mapped_ERR405224.sorted.bam
 
 # Index the sorted BAM file 
 samtools index mapped_ERR405224.sorted.bam
+
+# The bash script for mapping the files and indexing and sorting the BAM files exist in the folder bash_script
