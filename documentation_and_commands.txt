@@ -126,3 +126,14 @@ samtools sort mapped_ERR405224.bam -o mapped_ERR405224.sorted.bam
 samtools index mapped_ERR405224.sorted.bam
 
 # The bash script for mapping the files and indexing and sorting the BAM files exist in the folder bash_script
+
+# Download the annotation file used for gene quantification in Artemis software
+# found from same adress as the reference genome: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/007/545/GCA_000007545.1_ASM754v
+# (choose the gff file)
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/007/545/GCA_000007545.1_ASM754v1/GCA_000007545.1_ASM754v1_genomic.gff.gz
+
+# unzip the file 
+gunzip GCA_000007545.1_ASM754v1_genomic.gff.gz
+
+# In the folder mapping/mapping_2020_02_24/count_values and mapping_2020_02_24/RPKM_values, it is described how 
+# the values were obtained using Artemis software 
