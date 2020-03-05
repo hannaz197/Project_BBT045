@@ -4,8 +4,6 @@ output: html_notebook
   pdf_document: default
 ---
 
-# TODO: eventually fix the paths for saving 
-# TODO: Uncomment saving to file 
 # TODO: remove prefix common_BasemeanA_
 # TODO: should we remove RPKM load data part? 
 
@@ -119,7 +117,6 @@ common_BaseMeanA_order_0h_6h = order(common_BaseMeanA_significant_genes_0h_6h$pa
 common_BaseMeanA_order_0h_24h = order(common_BaseMeanA_significant_genes_0h_24h$padj)
 
 common_BaseMeanA_significant_genes_0h_30min = common_BaseMeanA_significant_genes_0h_30min[common_BaseMeanA_order_0h_30min,]
-# TODO: from old version: missed underscore here 
 common_BaseMeanA_significant_genes_0h_6h =  common_BaseMeanA_significant_genes_0h_6h[common_BaseMeanA_order_0h_6h,]
 common_BaseMeanA_significant_genes_0h_24h = common_BaseMeanA_significant_genes_0h_24h[common_BaseMeanA_order_0h_24h,]
 
@@ -129,10 +126,9 @@ common_BaseMeanA_significant_genes_0h_24h = common_BaseMeanA_significant_genes_0
 #Haven gotten and saved all the significant genes, these were further analysed after sorting them according to the code seen below. At last, table with the significant gens and their output log2FCs and padjusted etc are saved as a text file. 
 
 # Create new tables for the significant genes which have been processed together
-write.table(common_BaseMeanA_significant_genes_0h_30min, file ="/home/student5/project/results/differential_expression_results/common_BaseMeanA_significant_genes_30min", sep = "\t" )
-#TODO: the names here 
-write.table(common_BaseMeanA_significant_genes_0h_6h, file ="/home/student5/project/results/differential_expression_results/common_BaseMeanA_significant_genes_6h", sep = "\t" )
-write.table(common_BaseMeanA_significant_genes_0h_24h, file ="/home/student5/project/results/differential_expression_results/common_BaseMeanA_significant_genes_24h", sep = "\t" )
+write.table(common_BaseMeanA_significant_genes_0h_30min, file ="/home/student5/project/results/common_BaseMeanA_significant_genes_30min", sep = "\t",row.names=FALSE  )
+write.table(common_BaseMeanA_significant_genes_0h_6h, file ="/home/student5/project/results/common_BaseMeanA_significant_genes_6h", sep = "\t",row.names=FALSE   )
+write.table(common_BaseMeanA_significant_genes_0h_24h, file ="/home/student5/project/results/common_BaseMeanA_significant_genes_24h", sep = "\t",row.names=FALSE  )
 
 ```
 
@@ -191,6 +187,12 @@ common_BaseMeanA_high_0h_6h = sum(common_BaseMeanA_significant_genes_0h_6h$log2F
 common_BaseMeanA_low_0h_6h = sum(common_BaseMeanA_significant_genes_0h_6h$log2FoldChange < (-1))
 common_BaseMeanA_high_0h_24h = sum(common_BaseMeanA_significant_genes_0h_24h$log2FoldChange > 1)
 common_BaseMeanA_low_0h_24h = sum(common_BaseMeanA_significant_genes_0h_24h$log2FoldChange < (-1))
+
+# Ratios total genes significant, comparing to reference 
+ratio_0h_30min = dim(common_BaseMeanA_significant_genes_0h_30min)[1]/575
+ratio_0h_6h =  dim(common_BaseMeanA_significant_genes_0h_6h)[1]/2078
+ratio_0h_24h =  dim(common_BaseMeanA_significant_genes_0h_24h)[1]/1483
+
 # Ratios reference 
 common_BaseMeanA_ratio_ref_0h_30min = 8/28
 common_BaseMeanA_ratio_ref_0h_6h = 271/155
