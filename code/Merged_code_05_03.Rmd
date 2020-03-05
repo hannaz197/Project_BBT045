@@ -94,7 +94,7 @@ cds = estimateSizeFactors(cds) # Normalization
 cds = estimateDispersions(cds) # Estimate dispersion
 
 str(fitInfo(cds))
-pdf("/home/student5/project/results/differential_expression_results/fitted_dispersion_vs_normalizedmean.pdf") 
+pdf("/home/student5/project/results/figures/fitted_dispersion_vs_normalizedmean.pdf") 
 plotDispEsts(cds) # Gives the fitted dispersion vs normalized mean to see fit
 dev.off()
 # Where the plotDispEsts gives an approximate fit of the modelled data to our input data.
@@ -147,7 +147,7 @@ myCol <- brewer.pal(3, "Pastel2")
 venn.diagram(
         x = list(common_BaseMeanA_genelist_30min, common_BaseMeanA_genelist_6h, common_BaseMeanA_genelist_24h),
         category.names = c("30 min" , "6h " , "24h"),
-        filename = '/home/student5/project/results/differential_expression_results/VennDiagram_common.png',
+        filename = '/home/student5/project/results/figures/VennDiagram_common.png',
         output=TRUE,
         
         # Output features
@@ -236,7 +236,7 @@ p = ggplot(plot.data, aes(x=group, y=value)) +
   stat_summary(aes(x = as.numeric(group) + 0.4),fun.data = n_fun_low, geom = "text",color ="blue",size=8.5)  +theme_bw() + theme(axis.text.x=element_text(size=18),axis.text.y=element_text(size=18),panel.border = element_blank(), panel.grid.major = element_blank(),
 panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) +theme(axis.title.y = element_text(size = rel(1.8), angle = 90)) + theme(axis.title.x = element_text(size = rel(1.8), angle = 00))
  
-pdf("/home/student5/project/results/differential_expression_results/common_BaseMeanA_dotplot.pdf") 
+pdf("/home/student5/project/results/figures/common_BaseMeanA_dotplot.pdf") 
 p
 dev.off()
 
@@ -276,7 +276,7 @@ redblue <- colorspace::diverge_hsv(100)
 pal <- colorRampPalette(redblue)(100)
 
 # Heatmap, Eucledian is default distance matrix
-pdf("/home/student5/project/results/differential_expression_results/common_BaseMeanA_heatmap.pdf",height=10,width=10) 
+pdf("/home/student5/project/results/figures/common_BaseMeanA_heatmap.pdf",height=10,width=10) 
 heatmap.2(common_BaseMeanA_basemean_matrix,col=pal,cexRow=0.01,density.info = "none",trace="none")
 dev.off()
 ```
