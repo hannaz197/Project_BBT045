@@ -275,7 +275,7 @@ pal <- colorRampPalette(redblue)(100)
 
 # Heatmap, Eucledian is default distance matrix
 pdf("/home/student5/project/results/differential_expression_results/common_BaseMeanA_heatmap.pdf",height=10,width=10) 
-heatmap.2(common_BaseMeanA_basemean_matrix,col=pal,cexRow=0.01)
+heatmap.2(common_BaseMeanA_basemean_matrix,col=pal,cexRow=0.01,density.info = "none",trace="none")
 dev.off()
 ```
 
