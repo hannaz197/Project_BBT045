@@ -4,10 +4,9 @@
 conda install -c bioconda fastqc
 # with the version: bioconda / packages / fastqc 0.11.9 available at https://anaconda.org/bioconda/fastqc
 
-# Fastx toolkit from https://bioconda.github.io/recipes/fastx_toolkit/README.html
-conda install fastx_toolkit
-
 # Bowtie2 is already installed on remote server 
 
 # Artemis software from https://anaconda.org/bioconda/artemis
 conda install -c bioconda artemis
+
+# The packages used for the data analysis in R is shown in the R notebook
