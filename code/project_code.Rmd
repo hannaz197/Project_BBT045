@@ -1,0 +1,330 @@
+---
+title: "Testing code differential expression"
+output: html_notebook
+  pdf_document: default
+---
+
+# TODO: remove prefix common_BasemeanA_
+# TODO: should we remove RPKM load data part? 
+
+# Install libraries 
+```{r}
+# Tidyverse 
+#install.packages("tidyverse")
+# DESeq
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("DESeq")
+# ggplot2 
+# install.packages("ggplot2")
+# Farver
+# install.packages("farver")
+# VennDiagram package
+# install.packages("VennDiagram")
+```
+
+# Import libraries needed
+```{r}
+library("DESeq")
+library("ggplot2")
+library("tidyverse")
+library(VennDiagram) # to make venn diagrammes from DE genes
+library(RColorBrewer) # coloring Venn diagrammes
+library("gplots")
+```
+
+# Load the data 
+Data from the mapping were loaded, then processed to remove the sense/antisense counts and only keep the total ones. 
+```{r}
+# time = 0h
+counts_0h = read.table('/home/student5/project/mapping/mapping_2020_02_24/count_values/counts_values_0h.txt',
+                       sep = "\t", row.names = 1, header = TRUE)
+colnames_0h_samples = str_remove(colnames(counts_0h)[1:3],".sorted.bam") # keep the first 3 names 
+colnames_0h_samples = paste("0h_",colnames_0h_samples,sep="")
+counts_0h = read.table('/home/student5/project/mapping/mapping_2020_02_24/count_values/counts_values_0h.txt',
+                       skip=5, row.names = 1) # skip first 5 lines
+counts_0h = subset(counts_0h, select = c(Total, Total.1,Total.2))
+colnames(counts_0h) = colnames_0h_samples
+
+# time = 30min
+counts_30min = read.table('/home/student5/project/mapping/mapping_2020_02_24/count_values/counts_values_30min.txt',
+                          sep="\t", row.names = 1, header = TRUE)
+colnames_30min_samples = str_remove(colnames(counts_30min)[1:3],".sorted.bam") # keep the first 3 names 
+colnames_30min_samples = paste("30min_",colnames_30min_samples,sep="")
+counts_30min = read.table('/home/student5/project/mapping/mapping_2020_02_24/count_values/counts_values_30min.txt',
+                          skip = 5, row.names = 1) # skip first 5 lines 
+counts_30min = subset(counts_30min, select = c(Total, Total.1, Total.2))
+colnames(counts_30min) = colnames_30min_samples
+  
+# time = 6h 
+counts_6h =  read.table('/home/student5/project/mapping/mapping_2020_02_24/count_values/counts_values_6h.txt',
+                        sep = "\t", row.names = 1, header = TRUE)
+colnames_6h_samples = str_remove(colnames(counts_6h)[1:3],".sorted.bam") # keep the first 3 names 
+colnames_6h_samples = str_remove(colnames_6h_samples,"mapped_")
+colnames_6h_samples = paste("6h_",colnames_6h_samples,sep="")
+counts_6h = read.table('/home/student5/project/mapping/mapping_2020_02_24/count_values/counts_values_6h.txt',
+                       skip = 5, row.names = 1) # skip first 5 lines
+counts_6h = subset(counts_6h, select = c(Total, Total.1, Total.2))
+colnames(counts_6h) = colnames_6h_samples
+
+# time = 24h 
+counts_24h = read.table('/home/student5/project/mapping/mapping_2020_02_24/count_values/counts_values_24h.txt',
+                        sep = "\t", row.names = 1, header = TRUE)
+colnames_24h_samples = str_remove(colnames(counts_24h)[1:3],".sorted.bam") # keep the first 3 names 
+colnames_24h_samples = str_remove(colnames_24h_samples,"mapped_")
+colnames_24h_samples = paste("24h_",colnames_24h_samples,sep="")
+counts_24h = read.table('/home/student5/project/mapping/mapping_2020_02_24/count_values/counts_values_24h.txt',
+                        skip = 5, row.names = 1) # skip first 5 lines 
+counts_24h = subset(counts_24h, select = c(Total, Total.1, Total.2))
+colnames(counts_24h) = colnames_24h_samples
+# remove colnames vectors 
+rm(colnames_0h_samples,colnames_30min_samples,colnames_6h_samples,colnames_24h_samples)
+```
+
+# DESEq, find differentially expressed genes , common_BasemeanA normalization 
+# Normalize all counts in a common matrix, get only 1 value of baseMean for time = 0h
+```{r}
+
+# FDR cutoff 
+cutoff = 0.05
+counts_large_df = cbind(counts_0h,counts_30min,counts_6h,counts_24h)
+times = factor(c("0h","0h","0h","30min","30min","30min","6h","6h","6h","24h","24h","24h")) # The conditions
+cds = newCountDataSet(counts_large_df,times) # Data structure for DESeq
+cds = estimateSizeFactors(cds) # Normalization
+cds = estimateDispersions(cds) # Estimate dispersion
+
+str(fitInfo(cds))
+pdf("/home/student5/project/results/figures/fitted_dispersion_vs_normalizedmean.pdf") 
+plotDispEsts(cds) # Gives the fitted dispersion vs normalized mean to see fit
+dev.off()
+# Where the plotDispEsts gives an approximate fit of the modelled data to our input data.
+
+# time = 0h vs time = 30min 
+common_BaseMeanA_results_0h_30min = nbinomTest(cds, "0h","30min") # Calculate logfoldchange and p-values
+common_BaseMeanA_significant_genes_0h_30min = common_BaseMeanA_results_0h_30min[common_BaseMeanA_results_0h_30min$padj < cutoff,] # Significant genes
+
+# time = 0h vs time = 6h 
+common_BaseMeanA_results_0h_6h = nbinomTest(cds, "0h","6h") # Calculate logfoldchange and adj p-values
+common_BaseMeanA_significant_genes_0h_6h = common_BaseMeanA_results_0h_6h[common_BaseMeanA_results_0h_6h$padj < cutoff,] # Signicicant genes 
+
+# time = 0h vs time = 24h 
+common_BaseMeanA_results_0h_24h = nbinomTest(cds,"0h","24h") # Calculate logfoldchange and adj p-values 
+common_BaseMeanA_significant_genes_0h_24h = common_BaseMeanA_results_0h_24h[common_BaseMeanA_results_0h_24h$padj < cutoff,] # Significant genes 
+
+# Sort according to p-adj 
+common_BaseMeanA_order_0h_30min = order(common_BaseMeanA_significant_genes_0h_30min$padj)
+common_BaseMeanA_order_0h_6h = order(common_BaseMeanA_significant_genes_0h_6h$padj)
+common_BaseMeanA_order_0h_24h = order(common_BaseMeanA_significant_genes_0h_24h$padj)
+
+common_BaseMeanA_significant_genes_0h_30min = common_BaseMeanA_significant_genes_0h_30min[common_BaseMeanA_order_0h_30min,]
+common_BaseMeanA_significant_genes_0h_6h =  common_BaseMeanA_significant_genes_0h_6h[common_BaseMeanA_order_0h_6h,]
+common_BaseMeanA_significant_genes_0h_24h = common_BaseMeanA_significant_genes_0h_24h[common_BaseMeanA_order_0h_24h,]
+
+# Finding specific genes
+#significant_genes_0h_30min[significant_genes_0h_30min$id=="sifB",]$log2FoldChange
+
+#Haven gotten and saved all the significant genes, these were further analysed after sorting them according to the code seen below. At last, table with the significant gens and their output log2FCs and padjusted etc are saved as a text file. 
+
+# Create new tables for the significant genes which have been processed together
+write.table(common_BaseMeanA_significant_genes_0h_30min, file ="/home/student5/project/results/common_BaseMeanA_significant_genes_30min", sep = "\t",row.names=FALSE  )
+write.table(common_BaseMeanA_significant_genes_0h_6h, file ="/home/student5/project/results/common_BaseMeanA_significant_genes_6h", sep = "\t",row.names=FALSE   )
+write.table(common_BaseMeanA_significant_genes_0h_24h, file ="/home/student5/project/results/common_BaseMeanA_significant_genes_24h", sep = "\t",row.names=FALSE  )
+
+```
+
+# Create list of gene names and use in Venn diagramme
+To access what genes were commonly differentially expressed at all time points, a venn diagramme was created. 
+# Venn diagrammes for common basemeanA
+## Create list of gene names
+
+```{r}
+# Create list of GeneIDs
+common_BaseMeanA_genelist_30min = as.character(common_BaseMeanA_significant_genes_0h_30min$id)
+common_BaseMeanA_genelist_6h = as.character(common_BaseMeanA_significant_genes_0h_6h$id)
+common_BaseMeanA_genelist_24h = as.character(common_BaseMeanA_significant_genes_0h_24h$id)
+myCol <- brewer.pal(3, "Pastel2")
+# Chart where overlap between geneIDs are searched for
+venn.diagram(
+        x = list(common_BaseMeanA_genelist_30min, common_BaseMeanA_genelist_6h, common_BaseMeanA_genelist_24h),
+        category.names = c("30 min" , "6h " , "24h"),
+        filename = '/home/student5/project/results/figures/VennDiagram_common.png',
+        output=TRUE,
+        
+        # Output features
+        imagetype="png" ,
+        height = 480 , 
+        width = 480 , 
+        resolution = 300,
+        compression = "lzw",
+        
+        # Circles
+        lwd = 2,
+        lty = 'blank',
+        fill = myCol,
+        
+        # Numbers
+        cex = .6,
+        fontface = "bold",
+        fontfamily = "sans",
+        
+        # Set names
+        cat.cex = 0.6,
+        cat.fontface = "bold",
+        cat.default.pos = "outer",
+        cat.pos = c(-27, 27, 135),
+        cat.dist = c(0.055, 0.055, 0.085),
+        cat.fontfamily = "sans",
+        rotation = 1
+)
+```
+
+# Dotplot: values with common normalization
+```{r}
+# Larger than 1 or lower than -1 
+common_BaseMeanA_high_0h_30min = sum(common_BaseMeanA_significant_genes_0h_30min$log2FoldChange > 1)
+common_BaseMeanA_low_0h_30min = sum(common_BaseMeanA_significant_genes_0h_30min$log2FoldChange < (-1))
+common_BaseMeanA_high_0h_6h = sum(common_BaseMeanA_significant_genes_0h_6h$log2FoldChange > 1)
+common_BaseMeanA_low_0h_6h = sum(common_BaseMeanA_significant_genes_0h_6h$log2FoldChange < (-1))
+common_BaseMeanA_high_0h_24h = sum(common_BaseMeanA_significant_genes_0h_24h$log2FoldChange > 1)
+common_BaseMeanA_low_0h_24h = sum(common_BaseMeanA_significant_genes_0h_24h$log2FoldChange < (-1))
+
+# Ratios total genes significant, comparing to reference 
+ratio_0h_30min = dim(common_BaseMeanA_significant_genes_0h_30min)[1]/575
+ratio_0h_6h =  dim(common_BaseMeanA_significant_genes_0h_6h)[1]/2078
+ratio_0h_24h =  dim(common_BaseMeanA_significant_genes_0h_24h)[1]/1483
+
+# Ratios reference 
+ratio_logfold_high_0h_30min = common_BaseMeanA_high_0h_30min / 8 
+ratio_logfold_high_0h_6h = common_BaseMeanA_high_0h_6h / 271
+ratio_logfold_high_0h_24h = common_BaseMeanA_high_0h_24h / 148
+
+ratio_logfold_low_0h_30min = common_BaseMeanA_low_0h_30min / 28
+ratio_logfold_low_0h_6h = common_BaseMeanA_low_0h_6h / 155  
+ratio_logfold_low_0h_24h = common_BaseMeanA_low_0h_24h / 112 
+
+
+# Dot plot 
+common_BaseMeanA_logfold_30min = data.frame(group = "0.5",
+                           value = common_BaseMeanA_significant_genes_0h_30min$log2FoldChange)
+common_BaseMeanA_logfold_6h = data.frame(group="6", value = common_BaseMeanA_significant_genes_0h_6h$log2FoldChange)
+common_BaseMeanA_logfold_24h = data.frame(group="24",value=common_BaseMeanA_significant_genes_0h_24h$log2FoldChange)
+plot.data = rbind(common_BaseMeanA_logfold_30min, common_BaseMeanA_logfold_6h, common_BaseMeanA_logfold_24h)
+plot.data$colors = 0
+plot.data[which(plot.data$value < (-1)),"colors"] = -1
+plot.data[which( plot.data$value > 1),"colors"] = 1
+plot.data$colors = as.factor(plot.data$colors)
+# Number of observations in each dot plot
+n_fun <- function(x){
+  return(data.frame(y = 6.5,
+                    label = length(x)))
+}
+# Number of observations > 1 in each dot plot
+n_fun_high <- function(x){
+  return(data.frame(y = 1.5,
+                    label = length(x[ x > 1])))
+}
+# Number of observations < (-1) in each dot plot
+n_fun_low <- function(x){
+  return(data.frame(y = -1.5,
+                    label = length(x[ x <(-1)])))
+}
+# Plot it 
+p = ggplot(plot.data, aes(x=group, y=value)) + 
+  geom_dotplot(binaxis='y', stackdir='center',binwidth = 0.09,dotsize = 0.21, aes(color=colors)) +
+  xlab("hours in water") + scale_y_continuous(name="log2 fold change in expression", breaks=seq(-5,6,1),limits=c(-5,8)) + 
+  geom_hline(yintercept=1,linetype="dashed",size=0.5) + geom_hline(yintercept=-1,linetype="dashed",size=0.5) +
+   scale_color_manual(values=c("blue", "black", "red")) + guides(color=FALSE) +
+    stat_summary(fun.data = n_fun, geom = "text",size=8.5,position=position_nudge( y = 0.75)) + stat_summary(aes(x = as.numeric(group) + 0.4),fun.data = n_fun_high, geom = "text",color="red",size=8.5) +
+  stat_summary(aes(x = as.numeric(group) + 0.4),fun.data = n_fun_low, geom = "text",color ="blue",size=8.5)  +theme_bw() + theme(axis.text.x=element_text(size=18),axis.text.y=element_text(size=18),panel.border = element_blank(), panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) +theme(axis.title.y = element_text(size = rel(1.8), angle = 90)) + theme(axis.title.x = element_text(size = rel(1.8), angle = 00))
+ 
+pdf("/home/student5/project/results/figures/common_BaseMeanA_dotplot.pdf") 
+p
+dev.off()
+
+```
+
+# Heatmap common_BaseMeanA
+Using all genes with padj < 0.05 and foldchange > 2 for any timepoint (= 291 genes)
+```{r}
+# Among significant genes keep those that have foldchange >2
+# which is equivalent to logfoldchange > 1
+common_BaseMeanA_sign_2_fold_geneID_0h_30min = common_BaseMeanA_significant_genes_0h_30min[common_BaseMeanA_significant_genes_0h_30min$foldChange > 2,]$id
+common_BaseMeanA_sign_2_fold_geneID_0h_6h = common_BaseMeanA_significant_genes_0h_6h[common_BaseMeanA_significant_genes_0h_6h$foldChange > 2,]$id
+common_BaseMeanA_sign_2_fold_geneID_0h_24h = common_BaseMeanA_significant_genes_0h_24h[common_BaseMeanA_significant_genes_0h_24h$foldChange > 2,]$id
+
+# Save unique geneIDs for all three comparisons
+common_BaseMeanA_geneIDs_2_fold= c(common_BaseMeanA_sign_2_fold_geneID_0h_30min,common_BaseMeanA_sign_2_fold_geneID_0h_6h,
+                         common_BaseMeanA_sign_2_fold_geneID_0h_24h)
+common_BaseMeanA_unique_geneIDs_2_fold = unique(common_BaseMeanA_geneIDs_2_fold)
+
+# Keep all genes in unique-vector
+common_BaseMeanA_clustering_0h_30min = common_BaseMeanA_results_0h_30min[sapply(common_BaseMeanA_results_0h_30min$id,is.element,common_BaseMeanA_unique_geneIDs_2_fold),]
+common_BaseMeanA_clustering_0h_6h = common_BaseMeanA_results_0h_6h[sapply(common_BaseMeanA_results_0h_6h$id,is.element,common_BaseMeanA_unique_geneIDs_2_fold),]
+common_BaseMeanA_clustering_0h_24h = common_BaseMeanA_results_0h_24h[sapply(common_BaseMeanA_results_0h_24h$id,is.element,common_BaseMeanA_unique_geneIDs_2_fold),]
+
+# Create matrix
+common_BaseMeanA_basemean_matrix = cbind(common_BaseMeanA_clustering_0h_30min$baseMeanA,
+                                     common_BaseMeanA_clustering_0h_30min$baseMeanB,
+                                     common_BaseMeanA_clustering_0h_6h$baseMeanB,
+                                     common_BaseMeanA_clustering_0h_24h$baseMeanB)
+
+rownames(common_BaseMeanA_basemean_matrix) = common_BaseMeanA_clustering_0h_30min$id
+colnames(common_BaseMeanA_basemean_matrix) = c("0h","0.5h","6h","24h")
+common_BaseMeanA_basemean_matrix = log(common_BaseMeanA_basemean_matrix+1) # log transform
+
+# Choose colors for heatmap 
+redblue <- colorspace::diverge_hsv(100)
+pal <- colorRampPalette(redblue)(100)
+
+# Heatmap, Eucledian is default distance matrix
+pdf("/home/student5/project/results/figures/common_BaseMeanA_heatmap.pdf",height=10,width=10) 
+heatmap.2(common_BaseMeanA_basemean_matrix,col=pal,cexRow=0.01,density.info = "none",trace="none")
+dev.off()
+```
+
+# Results deviates even more from original study, using RPKM values
+# RPKM load data 
+```{r}
+counts_0h = read.table('/home/student5/project/mapping/mapping_2020_02_24/RPKM_values/RPKM_0h',
+                       sep = "\t", row.names = 1, header = TRUE)
+colnames_0h_samples = str_remove(colnames(counts_0h)[1:3],".sorted.bam") # keep the first 3 names 
+colnames_0h_samples = paste0("0h_",colnames_0h_samples)
+counts_0h = read.table('/home/student5/project/mapping/mapping_2020_02_24/RPKM_values/RPKM_0h',
+                       skip=5, row.names = 1) # skip first 5 lines
+counts_0h = subset(counts_0h, select = c(Total, Total.1,Total.2))
+colnames(counts_0h) = colnames_0h_samples
+counts_0h = round(counts_0h)
+# time = 30min
+counts_30min = read.table('/home/student5/project/mapping/mapping_2020_02_24/RPKM_values/RPKM_values_30min.txt',
+                          sep="\t", row.names = 1, header = TRUE)
+colnames_30min_samples = str_remove(colnames(counts_30min)[1:3],".sorted.bam") # keep the first 3 names
+colnames_30min_samples = paste0("30min_",colnames_30min_samples)
+counts_30min = read.table('/home/student5/project/mapping/mapping_2020_02_24/RPKM_values/RPKM_values_30min.txt',
+                          skip = 5, row.names = 1) # skip first 5 lines 
+counts_30min = subset(counts_30min, select = c(Total, Total.1, Total.2))
+colnames(counts_30min) = colnames_30min_samples
+counts_30min = round(counts_30min)
+# time = 6h
+counts_6h = read.table('/home/student5/project/mapping/mapping_2020_02_24/RPKM_values/RPKM_6h.txt',
+                          sep="\t", row.names = 1, header = TRUE)
+colnames_6h_samples = str_remove(colnames(counts_6h)[1:3],".sorted.bam")
+colnames_6h_samples = str_remove(colnames_6h_samples,"mapped_")
+colnames_6h_samples = paste0("6h_",colnames_6h_samples)
+counts_6h = read.table('/home/student5/project/mapping/mapping_2020_02_24/RPKM_values/RPKM_6h.txt', 
+                       skip = 5, row.names = 1) # skip first 5 lines
+counts_6h = subset(counts_6h,select=c(Total, Total.1, Total.2))
+colnames(counts_6h) = colnames_6h_samples
+counts_6h = round(counts_6h)
+# time = 24h
+counts_24h = read.table('/home/student5/project/mapping/mapping_2020_02_24/RPKM_values/RPKM_24h.txt',
+                          sep="\t", row.names = 1, header = TRUE)
+colnames_24h_samples = str_remove(colnames(counts_24h)[1:3],".sorted.bam")
+colnames_24h_samples = str_remove(colnames_24h_samples,"mapped_")
+colnames_24h_samples = paste0("24h_",colnames_24h_samples)
+counts_24h = read.table('/home/student5/project/mapping/mapping_2020_02_24/RPKM_values/RPKM_24h.txt', 
+                       skip = 5, row.names = 1) # skip first 5 lines
+counts_24h = subset(counts_24h,select = c(Total,Total.1,Total.2))
+colnames(counts_24h) = colnames_24h_samples
+counts_24h = round(counts_24h)
+```
