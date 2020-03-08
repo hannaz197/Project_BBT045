@@ -5,7 +5,7 @@ The metabollic profiling was done using textfiles containing GeneIDs as well as 
 
 3. Select containing all column values where the padj < 0.05, including GeneID, "baseMean"	"baseMeanA"	"baseMeanB"	"foldChange"	"log2FoldChange"	"pval"	"padj" from each conditon. Create a txt-file from these values (found in Project_BBT045/metabollic_profilling folder on this GitHub). 
 
-# Follwing steps are regardless if its actual data analyzed or references, where the actual data should have the same format as the txt-file found in the directory (with  GeneID, "baseMean"	"baseMeanA"	"baseMeanB"	"foldChange"	"log2FoldChange"	"pval"	"padj"). 
+## Follwing steps are regardless if its actual data analyzed or references, where the actual data should have the same format as the txt-file found in the directory (with  GeneID, "baseMean"	"baseMeanA"	"baseMeanB"	"foldChange"	"log2FoldChange"	"pval"	"padj"). 
 
 4. Open https://biocyc.org/overviewsWeb/celOv.shtml, with the reference organism "Salmonella enterica serovar Typhi str. CT18", and go to Metabolism>Cellular Overvier > Overlay Experimental Data (Omics Viewer)
 
